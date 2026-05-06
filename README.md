@@ -4,7 +4,7 @@
 
 [المصدر](https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx)
 
-[اقرأ هذا الملف] (parakeet-stt/docs/parakeet.md)
+[اقرأ هذا الملف](parakeet-stt/docs/parakeet.md)
 
 تم تصميم المشروع ليعمل بكفاءة عالية على المعالج (CPU)، مع استخراج نصوص وترجمات دقيقة التوقيت متوافقة مع معايير الترجمة المرئية. كما يتفوق على نموذج وايسبر.
 
