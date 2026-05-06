@@ -1,0 +1,26 @@
+WEBVTT
+
+00:00:00.480 --> 00:00:04.400
+Are you looking to optimize the performance of Linux systems?
+
+00:00:04.400 --> 00:00:11.920
+In this course, we will discuss and go hands-on with many performance-related concepts and tools.
+
+00:00:11.920 --> 00:00:24.480
+From understanding memory, CPU, and disk bottlenecks to utilizing tools like kernel tracing, perf, SAR, TOP, BPF, and more.
+
+00:00:24.480 --> 00:00:30.480
+We'll cover essential techniques for maximizing system efficiency.
+
+00:00:30.480 --> 00:00:31.840
+Hi, I'm Dr.
+
+00:00:31.840 --> 00:00:41.200
+Kevin Dankwert, and I have been developing, teaching, writing about, and working with Linux systems for 20 years.
+
+00:00:41.200 --> 00:00:53.040
+So whether you are a DevOps professional, system administrator, or software developer, join me in this course and gain valuable performance tuning knowledge.
+
+00:00:53.040 --> 00:00:55.180
+Let's get started.
+

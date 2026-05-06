@@ -5,7 +5,7 @@ import sys
 # 1. الإعدادات الأساسية
 repo_id = "istupakov/parakeet-tdt-0.6b-v3-onnx"
 model_path = "./local_model"
-audio_file = "test.wav"
+audio_file = "en.wav"
 output_dir = "output"
 
 # التحقق من الملف الصوتي فوراً لعدم تداخل الكود
@@ -27,21 +27,27 @@ result = model.recognize(audio_file, channel="mean")
 base_name = os.path.splitext(os.path.basename(audio_file))[0]
 out_txt = os.path.join(output_dir, f"{base_name}.txt")
 out_srt = os.path.join(output_dir, f"{base_name}.srt")
+out_vtt = os.path.join(output_dir, f"{base_name}.vtt") # المسار الجديد لملف VTT
 
 # 4. حفظ ملف TXT
 with open(out_txt, "w", encoding="utf-8") as f:
     f.write(result.text)
 
-# دالة التنسيق الزمني
-def format_srt_time(seconds):
+# دالة التنسيق الزمني (تم تحديثها لتدعم VTT أيضاً)
+def format_time(seconds, is_vtt=False):
     h = int(seconds // 3600)
     m = int((seconds % 3600) // 60)
     s = int(seconds % 60)
     ms = int(round((seconds - int(seconds)) * 1000))
-    return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
+    # تحديد الفاصل الزمني: النقطة لـ VTT والفاصلة لـ SRT
+    separator = "." if is_vtt else ","
+    return f"{h:02d}:{m:02d}:{s:02d}{separator}{ms:03d}"
 
-# 5. حفظ ملف SRT مباشرة بدون شروط زائدة
-with open(out_srt, "w", encoding="utf-8") as f_srt:
+# 5. حفظ ملفي SRT و VTT معاً
+with open(out_srt, "w", encoding="utf-8") as f_srt, open(out_vtt, "w", encoding="utf-8") as f_vtt:
+    # كتابة الترويسة الأساسية الخاصة بصيغة VTT
+    f_vtt.write("WEBVTT\n\n")
+
     counter = 1
     current_sentence = ""
     start_time = -1.0
@@ -78,11 +84,14 @@ with open(out_srt, "w", encoding="utf-8") as f_srt:
             next_start = next_ts[0] if isinstance(next_ts, (list, tuple)) else next_ts
             is_long_pause = (next_start - t_end) > 1.0
 
-        # الكتابة في الملف إذا تحقق شرط علامة الترقيم أو السكتة
+        # الكتابة في الملفات إذا تحقق شرط علامة الترقيم أو السكتة
         if has_punct or is_long_pause:
             clean_text = current_sentence.strip()
             if clean_text:
-                f_srt.write(f"{counter}\n{format_srt_time(start_time)} --> {format_srt_time(t_end)}\n{clean_text}\n\n")
+                # كتابة SRT
+                f_srt.write(f"{counter}\n{format_time(start_time)} --> {format_time(t_end)}\n{clean_text}\n\n")
+                # كتابة VTT (يُكتفى بالتوقيت والنص)
+                f_vtt.write(f"{format_time(start_time, is_vtt=True)} --> {format_time(t_end, is_vtt=True)}\n{clean_text}\n\n")
                 counter += 1
 
             current_sentence = ""
@@ -92,6 +101,7 @@ with open(out_srt, "w", encoding="utf-8") as f_srt:
     clean_text = current_sentence.strip()
     if clean_text:
         if start_time == -1.0: start_time = t_end
-        f_srt.write(f"{counter}\n{format_srt_time(start_time)} --> {format_srt_time(t_end)}\n{clean_text}\n\n")
+        f_srt.write(f"{counter}\n{format_time(start_time)} --> {format_time(t_end)}\n{clean_text}\n\n")
+        f_vtt.write(f"{format_time(start_time, is_vtt=True)} --> {format_time(t_end, is_vtt=True)}\n{clean_text}\n\n")
 
-print(f"✅ اكتملت العملية باحترافية! تم إنشاء:\n   📄 {out_txt}\n   🎬 {out_srt}")
+print(f"✅ اكتملت العملية باحترافية! تم إنشاء:\n   📄 {out_txt}\n   🎬 {out_srt}\n   🌐 {out_vtt}")
